@@ -9,6 +9,9 @@
 			"role": "Developer"
 		}
 	],
+	"config": {
+	  "vendor-dir": "application/vendor"
+	},
 	"license": "MIT",
 	"support": {
 		"source": "https://github.com/chriskacerguis/codeigniter-restserver"
