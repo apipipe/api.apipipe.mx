@@ -1,1 +1,4 @@
 content/web/application/vendor/
+
+content/web/application/config/database.php
+

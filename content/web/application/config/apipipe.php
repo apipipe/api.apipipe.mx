@@ -1,7 +1,7 @@
-220 ProFTPD Server (000webhost.com) [::ffff:145.14.145.32]
-cess allowed');
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
 $config = array();
 // Urls
-$config['FTP_HOST'] = 'localhost';
-$config['FTP_USER'] = 'master';
-$config['FTP_PWD'] = 'pwd';
+$config['TELEGRAM_TOKEN'] = '737828986:AAEDUogqj5AsBvoNZq2GYsH29cz18MSSQ8s';
+$config['TELEGRAM_URI'] = 'https://api.telegram.org/bot'.$config['TELEGRAM_TOKEN'].'/';

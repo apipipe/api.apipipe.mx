@@ -31,32 +31,11 @@ class Dictionary extends REST_Controller {
 
     private function reeplace_variables($data)
     {
+        $input = $this->get('input');
         $data = str_replace($this->apipies, $this->replace, $data);
-        $data = str_replace('{[KEY_WORD:INSTAGRAM_CONTENT]}', '$this->load_keyword(\'instagram_content\')', $data);
-        return str_replace('{[INPUT]}', $this->get('input'), $data);
-    }
-
-    private function load_keyword($key_word) 
-    {
-        if (!empty($key_word)) {
-            $ch = curl_init();
-            $options = [
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_URL            => base_url($this->reeplace_variables("dictionary/keyword/$key_word?input={[INPUT]}"))
-            ];
-
-            curl_setopt_array($ch, $options);
-
-            if ($json_file = curl_exec($ch)) {
-                $json_data = json_decode($json_file, true);
-            } else {
-                return false;
-            }
-            curl_close($ch);
-            return $json_data;
-        }
-        return false;
+        $data = str_replace('{[KEY_WORD:INSTAGRAM_CONTENT]}', '$this->load_keyword(\'instagram_content\', \'{[INPUT]}\')', $data);
+        $data = str_replace('{[EVENT:TELEGRAM_SEND]}', '$this->sendTelegram(\'sendMessage\', isset($params) ? $params : null, isset($reply_type) ? $reply_type : null)', $data);
+        return str_replace('{[INPUT]}', $input, $data);
     }
 
     public function keyword_get()
@@ -65,15 +44,13 @@ class Dictionary extends REST_Controller {
         $this->load->model('dictionary_model');
         if ($r = $this->dictionary_model->read($key_word)) {
             $code = $this->reeplace_variables($r->process);
-            try {
-                $data = eval($code);
-                $this->response(['status' => 'success', 'data' => $data], REST_Controller::HTTP_OK);
-            } catch (Exception $e) {
-                $this->response([
-                    'status' => FALSE,
-                    'message' => 'ERROR:' . $e->getMessage()
-                ], REST_Controller::HTTP_BAD_REQUEST); // NOT_FOUND (404) being the HTTP response code
+            $process = $this->dictionary_model->process_exect($code);
+
+            $response_code = REST_Controller::HTTP_BAD_REQUEST;
+            if ($process['status']) {
+                $response_code = REST_Controller::HTTP_OK;
             }
+            $this->response($process, $response_code);
         } else {
             $this->response([
                 'status' => FALSE,
