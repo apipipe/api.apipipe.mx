@@ -16,6 +16,9 @@ $date= date('Y-m-j H:i:s');
 $now = strtotime ( '-6 hour' , strtotime ($date));
 $now = date ( 'Y-m-j H:i:s' , $now);
 
+// Usernames
+require_once('usernames.php');
+
 function call($keyword, $input)
 {
   $api = "https://apipipe.000webhostapp.com/apipipe.mx/content/web";
@@ -66,21 +69,24 @@ function send_telegram($users)
   echo '<pre>Sending Telegram message...</pre>';
   $sending_message = '';
   if (count($users)) {
-    // call('telegram_send', '_Total changed: '.$total_users.'_');
-    $sending_message .= '_Total changed: '.count($users).'_';
-    foreach ($users as $user) {
-      $tags = implode('.', explode('|', $user['tag']));
-      $sending_message .= "{$user['username']} {$user['posts']} ; {$user['followers']} ; {$user['following']} $tags";
+    // $sending_message .= '_Total changed: '.count($users).'_';
+    foreach ($users as $i => $user) {
+      if (in_array($user['username'], ['dann.cortess', 'alexander.anhe']) ) {
+        // $tags = implode('/', explode('|', $user['tag']));
+        $sending_message .= "{$user['username']} _{$user['posts']}:{$user['followers']}:{$user['following']}_ ";
+      }
     }
-  } else {
-    $sending_message = '_No user data changes!_';
-  }
-  $request = call('telegram_send', urlencode($sending_message));
-  if ($request['data']) { 
-    echo '<pre>Request: correct</pre>';
+    if (!empty($sending_message)) {
+      $request = call('telegram_send', urlencode($sending_message));
+      if ($request['data']) { 
+        echo '<pre>Request: correct</pre>';
 
-  } else {
-    echo '<pre>Request: error request</pre><pre>-';var_dump($request); echo '</pre>';
+      } else {
+        echo '<pre>Request: error request</pre><pre>-';var_dump($request); echo '</pre>';
+      }
+    } else {
+        echo '<pre>Request: No sending data</pre>';
+    }
   }
 }
 
@@ -129,8 +135,6 @@ function type_tag($req, $db)
 }
 
 // START SHOW
-
-require_once('usernames.php');
 
 if (isset($usernames) && is_array($usernames) && count($usernames) > 0) {
   echo '<pre>Total usernames:'.count($usernames).'</pre>';

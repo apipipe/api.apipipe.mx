@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'https://apipipe.000webhostapp.com/apipipe.mx/content/web/';
+$config['base_url'] = 'http://dev.apipipe.mx/';
 
 /*
 |--------------------------------------------------------------------------
